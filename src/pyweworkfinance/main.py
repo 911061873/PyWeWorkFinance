@@ -7,6 +7,7 @@ from ctypes import (
     Structure,
     CDLL,
     POINTER,
+    string_at
 )
 import json
 from typing import Optional
@@ -149,7 +150,7 @@ class WeWorkFinance:
         self._lib.GetOutIndexBuf.argtypes = [POINTER(MediaData)]
         self._lib.GetOutIndexBuf.restype = c_char_p
         self._lib.GetData.argtypes = [POINTER(MediaData)]
-        self._lib.GetData.restype = c_char_p
+        self._lib.GetData.restype = c_void_p
         self._lib.GetIndexLen.argtypes = [POINTER(MediaData)]
         self._lib.GetIndexLen.restype = c_int
         self._lib.GetDataLen.argtypes = [POINTER(MediaData)]
@@ -257,8 +258,9 @@ class WeWorkFinance:
             if ret != 0:
                 logger.debug(f"{ret=}")
                 raise WeWorkFinanceError(ret, "下载媒体文件失败")
-            print(media_data)
-            data = self._lib.GetData(media_data)
+            data_ptr = self._lib.GetData(media_data)
+            data_len = self._lib.GetDataLen(media_data)
+            data = string_at(data_ptr, data_len)
             outindexbuf = self._lib.GetOutIndexBuf(media_data)
             is_finish = self._lib.IsMediaDataFinish(media_data)
             return GetMediaDataResponse(

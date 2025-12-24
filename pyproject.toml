@@ -1,6 +1,6 @@
 [project]
 name = "pyweworkfinance"
-version = "1.0.1"
+version = "1.1.0"
 description = "Python封装的企微会话存档SDK"
 readme = "README.md"
 authors = [{ name = "yunchuan@yingdao", email = "yun.chuan@yingdao.com" }]
