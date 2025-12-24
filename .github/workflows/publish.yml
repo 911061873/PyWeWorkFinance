@@ -38,6 +38,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           # 指定要上传到 Release 的文件（uv build 默认输出到 dist/）
-          files: dist/*
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
           # 生成 Release 日志（自动提取 commit 信息）
           generate_release_notes: true
