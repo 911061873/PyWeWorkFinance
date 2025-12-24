@@ -261,7 +261,7 @@ class WeWorkFinance:
             data_ptr = self._lib.GetData(media_data)
             data_len = self._lib.GetDataLen(media_data)
             data = string_at(data_ptr, data_len)
-            outindexbuf = self._lib.GetOutIndexBuf(media_data)
+            outindexbuf = self._lib.GetOutIndexBuf(media_data).decode("utf-8")
             is_finish = self._lib.IsMediaDataFinish(media_data)
             return GetMediaDataResponse(
                 data=data,
