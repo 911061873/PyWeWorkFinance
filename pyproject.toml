@@ -8,6 +8,11 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = []
+urls = { 
+    Homepage = "https://github.com/911061873/PyWeWorkFinance" ,
+    GitHub = "https://github.com/911061873/PyWeWorkFinance",
+    
+}
 
 [build-system]
 requires = ["hatchling"]
@@ -15,12 +20,3 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pyweworkfinance"]
-
-
-
-
-
-
-
-
-
