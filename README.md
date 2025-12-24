@@ -29,7 +29,7 @@ PyWeWorkFinance 是对企业微信官方会话存档 SDK 的 Python 封装，提
 | Linux   | ✓      | ✓     |
 | macOS   | ✗      | ✗     |
 
-macOS 平台不支持,可尝试在 Docker 里运行
+macOS 平台不支持,可~~尝试~~在 Docker 里运行（亲测可用）
 
 ### Windows
 
