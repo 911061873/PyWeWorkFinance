@@ -3,16 +3,10 @@ name = "pyweworkfinance"
 version = "1.0.0"
 description = "Python封装的企微会话存档SDK"
 readme = "README.md"
-authors = [
-    { name = "yunchuan@yingdao", email = "yun.chuan@yingdao.com" }
-]
+authors = [{ name = "yunchuan@yingdao", email = "yun.chuan@yingdao.com" }]
 requires-python = ">=3.10"
 dependencies = []
-urls = { 
-    Homepage = "https://github.com/911061873/PyWeWorkFinance" ,
-    GitHub = "https://github.com/911061873/PyWeWorkFinance",
-    
-}
+urls = { Homepage = "https://github.com/911061873/PyWeWorkFinance", GitHub = "https://github.com/911061873/PyWeWorkFinance" }
 
 [build-system]
 requires = ["hatchling"]
