@@ -21,6 +21,26 @@ PyWeWorkFinance 是对企业微信官方会话存档 SDK 的 Python 封装，提
 - **代理支持**：可配置代理服务器和代理密码
 - **超时控制**：可设置请求超时时间
 
+## 兼容性
+
+| 平台    | x86_64 | ARM64 |
+| ------- | ------ | ----- |
+| Windows | ✓      | ✗     |
+| Linux   | ✓      | ✓     |
+| macOS   | ✗      | ✗     |
+
+macOS 平台不支持,可尝试在 Docker 里运行
+
+### Windows
+
+- 支持 x86_64 (AMD64) 架构
+- 库文件：`WeWorkFinanceSdk.dll`
+
+### Linux
+
+- 支持 x86_64 架构，库文件：`libWeWorkFinanceSdk_C_x86.so`
+- 支持 ARM64 架构，库文件：`libWeWorkFinanceSdk_C_arm.so`
+
 ## 安装
 
 ### 从 PyPI 安装（推荐）
@@ -32,12 +52,6 @@ pip install pyweworkfinance
 ## 快速开始
 
 ### 初始化 SDK
-
-**注意：** 解密功能依赖 `pycryptodome`，请先安装：
-
-```bash
-pip install pycryptodome
-```
 
 ```python
 from pyweworkfinance import WeWorkFinance
@@ -75,6 +89,12 @@ else:
 ```
 
 ### 解密聊天消息
+
+**注意：** 解密功能依赖 `pycryptodome`，请先安装：
+
+```bash
+pip install pycryptodome
+```
 
 ```python
 # 解密单条消息
@@ -119,18 +139,6 @@ else:
         timeout=5
     )
 ```
-
-## 平台支持
-
-### Windows
-
-- 支持 x86_64 (AMD64) 架构
-- 库文件：`WeWorkFinanceSdk.dll`
-
-### Linux
-
-- 支持 x86_64 架构，库文件：`libWeWorkFinanceSdk_C_x86.so`
-- 支持 ARM64 架构，库文件：`libWeWorkFinanceSdk_C_arm.so`
 
 ## 高级用法
 
