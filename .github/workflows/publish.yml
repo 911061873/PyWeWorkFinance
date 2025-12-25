@@ -9,6 +9,14 @@ jobs:
   build_wheels:
     name: Build ${{ matrix.plat_name }}
     runs-on: ${{ matrix.os }}
+    environment:
+      name: pypi
+      url: https://test.pypi.org/p/pyweworkfinance
+    permissions:
+      # OIDC 发布到 PyPI 所需
+      id-token: write
+      # 创建 GitHub Release 所需
+      contents: write
     strategy:
       fail-fast: false
       matrix:
