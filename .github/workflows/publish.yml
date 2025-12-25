@@ -2,7 +2,7 @@ name: Build Platform Wheels
 
 on:
   push:
-    branches: [test_github_action]
+    branches: [test_github_actions]
   workflow_dispatch:
 
 jobs:
