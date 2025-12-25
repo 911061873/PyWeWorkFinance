@@ -2,39 +2,19 @@ name: Build Platform Wheels
 
 on:
   push:
-    branches: [test_github_actions]
+    branches: [test_github_action]
   workflow_dispatch:
 
 jobs:
-  build_wheels:
-    name: Build ${{ matrix.plat_name }}
-    runs-on: ${{ matrix.os }}
+  build_and_publish:
+    name: Build All Wheels on Linux
+    runs-on: ubuntu-latest
     environment:
       name: pypi
       url: https://test.pypi.org/p/pyweworkfinance
     permissions:
-      # OIDC 发布到 PyPI 所需
       id-token: write
-      # 创建 GitHub Release 所需
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # Windows x64
-          - os: windows-latest
-            plat_name: win_amd64
-            target: windows
-
-          # Linux x86_64
-          - os: ubuntu-latest
-            plat_name: manylinux2014_x86_64
-            target: linux_x86
-
-          # Linux ARM64
-          - os: ubuntu-latest
-            plat_name: manylinux2014_aarch64
-            target: linux_arm
 
     steps:
       - uses: actions/checkout@v4
@@ -45,39 +25,48 @@ jobs:
       - name: Setup Python
         run: uv python install
 
-      # 核心逻辑：根据矩阵目标清理并整理 libs 目录
-      - name: Prepare libs for ${{ matrix.target }}
+      - name: Build All Platforms
         shell: bash
         run: |
-          LIBS_DIR="src/pyweworkfinance/libs"
+          LIBS_BASE="src/pyweworkfinance/libs"
+          # 备份原始 libs 目录，因为我们要进行破坏性修改（删除无关文件）
+          cp -r $LIBS_BASE $LIBS_BASE/../libs_backup
 
-          if [ "${{ matrix.target }}" == "windows" ]; then
-            # Windows: 删除 linux 目录，保留 windows 目录内容
-            rm -rf $LIBS_DIR/linux
-            # 保持 windows 目录结构或根据需要移动到 libs 根目录
+          # 定义需要构建的平台列表
+          # 格式: "目标名称|平台标签"
+          PLATFORMS=("windows|win_amd64" "linux_x86|manylinux2014_x86_64" "linux_arm|manylinux2014_aarch64")
+
+          for entry in "${PLATFORMS[@]}"; do
+            IFS="|" read -r TARGET PLAT_NAME <<< "$entry"
+            echo "------------------------------------------"
+            echo "Processing target: $TARGET -> $PLAT_NAME"
             
-          elif [ "${{ matrix.target }}" == "linux_x86" ]; then
-            # Linux x86: 删除 windows 和 arm 版 so
-            rm -rf $LIBS_DIR/windows
-            rm -f $LIBS_DIR/linux/libWeWorkFinanceSdk_C_arm.so
-            # 重命名为统一名称，方便 Python 代码通过统一文件名加载
-          elif [ "${{ matrix.target }}" == "linux_arm" ]; then
-            # Linux ARM: 删除 windows 和 x86 版 so
-            rm -rf $LIBS_DIR/windows
-            rm -f $LIBS_DIR/linux/libWeWorkFinanceSdk_C_x86.so
-          fi
+            # 1. 还原 libs 目录
+            rm -rf $LIBS_BASE
+            cp -r $LIBS_BASE/../libs_backup $LIBS_BASE
 
-      # 执行构建。注意：由于是纯 Python 包装二进制，需要手动指定平台标签
-      # 否则 uv 可能将其标记为 none-any
-      - name: Build wheel
-        run: |
-          uv build --wheel --config-setting="--build-option=--plat-name=${{ matrix.plat_name }}"
+            # 2. 根据目标清理文件
+            if [ "$TARGET" == "windows" ]; then
+              rm -rf $LIBS_BASE/linux
+            elif [ "$TARGET" == "linux_x86" ]; then
+              rm -rf $LIBS_BASE/windows
+              rm -f $LIBS_BASE/linux/libWeWorkFinanceSdk_C_arm.so
+            elif [ "$TARGET" == "linux_arm" ]; then
+              rm -rf $LIBS_BASE/windows
+              rm -f $LIBS_BASE/linux/libWeWorkFinanceSdk_C_x86.so
+            fi
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheel-${{ matrix.plat_name }}
-          path: dist/*.whl
+            # 3. 构建该平台的 Wheel
+            # 注意：使用 --no-sdist 避免重复生成源码包
+            uv build --wheel --no-sdist --config-setting="--build-option=--plat-name=$PLAT_NAME"
+          done
+
+          # 4. 最后单独生成一个源码包 (sdist)
+          uv build --sdist
+
+      - name: Show Built Files
+        run: ls -lh dist/
+
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
