@@ -78,3 +78,8 @@ jobs:
         with:
           name: wheel-${{ matrix.plat_name }}
           path: dist/*.whl
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
