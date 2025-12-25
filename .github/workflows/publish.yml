@@ -33,11 +33,9 @@ jobs:
           BACKUP_DIR="libs_source_backup"
           TEMP_DIST="dist_accumulator"
 
-          # 创建临时目录
           mkdir -p $TEMP_DIST
 
           # --- 2. 备份原始 libs 目录 ---
-          # 直接备份到根目录下的独立文件夹，不再使用 ../ 这种相对路径
           cp -r $LIBS_BASE $BACKUP_DIR
 
           # --- 3. 循环构建各个平台 ---
@@ -48,7 +46,7 @@ jobs:
             echo "------------------------------------------"
             echo "Processing target: $TARGET -> $PLAT_NAME"
             
-            # 还原 libs 目录：先彻底删除旧的，再从根目录备份处拷贝新的
+            # 还原 libs 目录
             rm -rf $LIBS_BASE
             cp -r $BACKUP_DIR $LIBS_BASE
 
@@ -63,10 +61,7 @@ jobs:
               rm -f $LIBS_BASE/linux/libWeWorkFinanceSdk_C_x86.so
             fi
 
-            # 执行构建
-            # 使用 --out-dir 确保文件存入临时目录
-            # uv build 默认会清空输出目录，所以我们每个平台单独构建后，文件会自动堆积在 TEMP_DIST
-            uv build --wheel --no-sdist \
+            uv build --wheel \
               --config-setting="--build-option=--plat-name=$PLAT_NAME" \
               --out-dir $TEMP_DIST
           done
@@ -75,11 +70,8 @@ jobs:
           uv build --sdist --out-dir $TEMP_DIST
 
           # --- 5. 整理最终产物 ---
-          # 移除自动生成的 dist（如果存在），将积累的所有包移入真正的 dist 目录
           rm -rf dist
           mv $TEMP_DIST dist
-
-          # 清理备份文件夹
           rm -rf $BACKUP_DIR
 
       - name: Show Built Files
