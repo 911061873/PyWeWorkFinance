@@ -1,1 +1,1 @@
-src/pyweworkfinance/libs/* linguist-vendored
+*.h linguist-vendored
